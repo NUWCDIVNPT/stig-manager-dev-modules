@@ -1,0 +1,12 @@
+{
+  "name": "@nuwcdivnpt/stig-manager-dev-modules",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NUWCDIVNPT/stig-manager-dev-modules.git"
+  },
+  "license": "MIT"
+}
