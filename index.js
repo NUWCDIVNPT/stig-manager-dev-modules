@@ -1,9 +1,9 @@
 import * as auth from './lib/auth.js'
 import * as resourceTiming from './lib/resourceTiming.js'
-import {OAS} from './lib/oas.js'
+import {OpenApiOps} from './lib/openApiOps.js'
 
 export {
   auth,
   resourceTiming,
-  OAS
+  OpenApiOps
 }

@@ -1,10 +1,10 @@
-import { auth, resourceTiming, OAS } from '../index.js'
+import { auth, resourceTiming, OpenApiOps } from '../index.js'
 
 // common for all examples
 // OAS class lets us create URLs from OAS operationIds and parameters
 const apiBase = 'http://localhost:64001/api'
 const apiSpecPath = '/home/csmig/dev/stig-manager-csmig/api/source/specification/stig-manager.yaml'
-const oas = new OAS({ apiSpecPath, apiBase })
+const oas = new OpenApiOps({ apiSpecPath, apiBase })
 
 // A. Get timings for one request using a pre-fetched token
 {
