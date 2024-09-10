@@ -1,42 +1,65 @@
-import {auth, resourceTiming} from '../index.js'
+import { auth, resourceTiming, OAS } from '../index.js'
 
 // common for all examples
+// OAS class lets us create URLs from OAS operationIds and parameters
 const apiBase = 'http://localhost:64001/api'
+const apiSpecPath = '/home/csmig/dev/stig-manager-csmig/api/source/specification/stig-manager.yaml'
+const oas = new OAS({ apiSpecPath, apiBase })
 
+// A. Get timings for one request using a pre-fetched token
+{
+  const url = oas.getUrl('getCollection', {
+    collectionId: 1,
+    projection: ['labels'],
+    elevate: true
+  })
+  const username = 'stigmanadmin'
+  const token = await auth.getAccessToken({ username })
+  const timing = await resourceTiming.getResourceTiming({ url, token })
+  console.log(`A: ${timing.name}: ${timing.responseStart - timing.requestStart} (${username})`)
+}
 
-// A. Get timings for one request with pre-fetched token 
-const url = `${apiBase}/collections/30?projection=labels`
-const token = await auth.getAccessToken({username: 'stigmanadmin'})
-const t1 = await resourceTiming.getResourceTiming({url, token})
-console.log(`A: ${t1.name}: ${t1.responseStart - t1.requestStart}`)
-console.log()
+// B. Get timings for one request with username provided instead of token (token fetched dynamically)
+{
+  const url = oas.getUrl('getAsset', {
+    assetId: 1,
+    projection: ['stigs']
+  })
+  const username = 'stigmanadmin'
+  const timing = await resourceTiming.getResourceTiming({ url, username })
+  console.log(`B: ${timing.name}: ${timing.responseStart - timing.requestStart} (${username})`)
+}
 
-// B. Get timings for one request with username provided (token fetched dynamically)
-const t2 = await resourceTiming.getResourceTiming({url, username: 'stigmanadmin'})
-console.log(`B: ${t2.name}: ${t2.responseStart - t2.requestStart}`)
-console.log()
+// C. Get timings for multiple requests with different users
+{
+  const url = `${apiBase}/assets/1?projection=stigs`
+  const requests = [
+    { url, username: 'admin' },
+    { url, username: 'user01' },
+    { url, username: 'user02' },
+    { url, username: 'stigmanadmin' }
+  ]
 
-// C. Get timings for multiple requests, some with usernames and one with pre-fetched token
-const requests = [
-  {
-    url: `${apiBase}/collections/30?projection=labels`,
-    token
-  },
-  {
-    url: `${apiBase}/collections/30?projection=labels`,
-    username: 'admin'
-  },
-  {
-    url: `${apiBase}/assets/30?projection=stigs`,
-    username: 'user01'
-  },
-  {
-    url: `${apiBase}/assets/30?projection=stigs`,
-    username: 'user02'
+  const timings = await resourceTiming.getResourceTimings(requests)
+
+  let index = 0
+  for (const time of timings) {
+    console.log(`C: ${time.name}: ${time.responseStart - time.requestStart} (${requests[index].username})`)
+    index++
   }
-]
+}
 
-const timings = await resourceTiming.getResourceTimings(requests)
-for (const time of timings) {
-  console.log(`C: ${time.name}: ${time.responseStart - time.requestStart}`)
+// D. Get timings for an operationId, with each projection and all of them
+{
+  const username = 'admin'
+  const urls = oas.getProjectedUrls('getCollection', { collectionId: 1, elevate: true })
+  const requests = urls.map(url => ({ username, url }))
+
+  const timings = await resourceTiming.getResourceTimings(requests)
+
+  let index = 0
+  for (const time of timings) {
+    console.log(`D: ${time.name}: ${time.responseStart - time.requestStart} (${requests[index].username})`)
+    index++
+  }
 }
