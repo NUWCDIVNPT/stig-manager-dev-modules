@@ -2,9 +2,9 @@ import { auth, resourceTiming, OpenApiOps } from '../index.js'
 
 // common for all examples
 // OAS class lets us create URLs from OAS operationIds and parameters
-const apiBase = 'http://localhost:64001/api'
-const apiSpecPath = '/home/csmig/dev/stig-manager-csmig/api/source/specification/stig-manager.yaml'
-const oas = new OpenApiOps({ apiSpecPath, apiBase })
+// Fetch the OAS definition from a running STIG Manager
+const definition = await(await fetch(`http://localhost:54000/api/op/definition`)).json()
+const oas = new OpenApiOps({ definition })
 
 // A. Get timings for one request using a pre-fetched token
 {
@@ -32,7 +32,10 @@ const oas = new OpenApiOps({ apiSpecPath, apiBase })
 
 // C. Get timings for multiple requests with different users
 {
-  const url = `${apiBase}/assets/1?projection=stigs`
+  const url = oas.getUrl('getAsset', {
+    assetId: 1,
+    projection: ['stigs']
+  })
   const requests = [
     { url, username: 'admin' },
     { url, username: 'user01' },
