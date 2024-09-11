@@ -10,7 +10,7 @@ const oas = new OpenApiOps({ definition })
 {
   const url = oas.getUrl('getCollection', {
     collectionId: 1,
-    projection: ['labels'],
+    projection: 'labels',
     elevate: true
   })
   const username = 'stigmanadmin'
@@ -23,7 +23,7 @@ const oas = new OpenApiOps({ definition })
 {
   const url = oas.getUrl('getAsset', {
     assetId: 1,
-    projection: ['stigs']
+    projection: 'stigs'
   })
   const username = 'stigmanadmin'
   const timing = await resourceTiming.getResourceTiming({ url, username })
@@ -34,7 +34,7 @@ const oas = new OpenApiOps({ definition })
 {
   const url = oas.getUrl('getAsset', {
     assetId: 1,
-    projection: ['stigs']
+    projection: ['stigs', 'statusGrants']
   })
   const requests = [
     { url, username: 'admin' },
