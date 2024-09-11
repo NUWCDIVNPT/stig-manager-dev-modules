@@ -10,7 +10,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@trojs/openapi-dereference": "^0.2.3",
-    "js-yaml": "^4.1.0"
+    "@trojs/openapi-dereference": "^0.2.3"
   }
 }
